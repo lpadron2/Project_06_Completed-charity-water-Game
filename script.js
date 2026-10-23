@@ -16,6 +16,21 @@ const milestoneCelebration = document.querySelector('#milestone-celebration');
 const difficultyOptionsContainer = document.querySelector('#difficulty-options');
 const difficultyOptions = document.querySelectorAll('input[name="difficulty"]');
 
+function createSound(path) {
+	const sound = new Audio(path);
+	sound.preload = 'auto';
+	return sound;
+}
+
+const sounds = {
+	start: createSound('audio/start.mp3'),
+	gameOver: createSound('audio/over.mp3'),
+	win: createSound('audio/yay.mp3'),
+	dirtyWater: createSound('audio/ohno.mp3'),
+	bonus: createSound('audio/bonus.mp3'),
+	milestone: createSound('audio/milestone.mp3')
+};
+
 let score = 0;
 let bonusScore = 0;
 let lives = 3;
@@ -31,6 +46,36 @@ let gamePaused = false;
 let animationId;
 let keysPressed = {};
 let celebratedMilestones = [];
+
+function playSound(sound) {
+	sound.currentTime = 0;
+	const playPromise = sound.play();
+
+	if (playPromise !== undefined) {
+		playPromise.catch((error) => {
+			console.warn('Unable to play game sound.', error);
+		});
+	}
+}
+
+function primeSounds() {
+	Object.values(sounds).filter((sound) => sound !== sounds.start).forEach((sound) => {
+		const originalVolume = sound.volume;
+		sound.volume = 0;
+		const playPromise = sound.play();
+
+		if (playPromise !== undefined) {
+			playPromise.then(() => {
+				sound.pause();
+				sound.currentTime = 0;
+				sound.volume = originalVolume;
+			}).catch((error) => {
+				sound.volume = originalVolume;
+				console.warn('Unable to prepare game sound.', error);
+			});
+		}
+	});
+}
 
 function createBricks() {
 	const brickCount = 42;
@@ -128,6 +173,7 @@ function checkMilestones() {
 	const celebrationMessages = ['wow!', 'keep going!', 'Good job!'];
 	const randomMessage = celebrationMessages[Math.floor(Math.random() * celebrationMessages.length)];
 	showCelebration(`${milestone} points! ${randomMessage}`);
+	playSound(sounds.milestone);
 }
 
 function updateBonuses() {
@@ -143,9 +189,11 @@ function updateBonuses() {
 				bonusScore = 0;
 				celebratedMilestones = celebratedMilestones.filter((milestone) => score >= milestone);
 				showCelebration('Oh no!', true);
+				playSound(sounds.dirtyWater);
 			} else {
 				bonusScore += 1;
 				score += 25;
+				playSound(sounds.bonus);
 			}
 			bonus.element.remove();
 			return false;
@@ -162,6 +210,7 @@ function updateBonuses() {
 function loseLife() {
 	lives -= 1;
 	if (lives === 0) {
+		playSound(sounds.gameOver);
 		endGame('Game over', `You scored ${score} points. Ready for another round?`);
 	} else {
 		resetBall();
@@ -226,6 +275,7 @@ function moveBall() {
 
 	if (lives > 0 && document.querySelectorAll('.brick').length === 0) {
 		showConfetti();
+		playSound(sounds.win);
 		endGame('You made a splash!', `You cleared the board with ${score} points.`);
 	} else {
 		animationId = requestAnimationFrame(moveBall);
@@ -235,6 +285,8 @@ function moveBall() {
 function startGame() {
 	if (!selectedDifficulty) return;
 
+	primeSounds();
+	playSound(sounds.start);
 	document.querySelectorAll('.brick, .bonus').forEach((item) => item.remove());
 	clearConfetti();
 	score = 0;
