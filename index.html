@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charity Water Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="game-shell">
+        <header class="game-header">
+            <div class="brand-lockup">
+                <img src="img/cw_logo_horizontal.png" alt="charity: water">
+                <div>
+                    <p class="eyebrow">Clean water mission</p>
+                    <h1>Break through for water</h1>
+                </div>
+            </div>
+            <p class="mission-copy">Clear the blocks and collect every drop you can.</p>
+        </header>
+
+        <section class="scoreboard" aria-label="Game stats">
+            <div class="stat"><span>Score</span><strong id="score">0</strong></div>
+            <div class="stat"><span>Balls</span><strong id="lives">3</strong></div>
+            <div class="stat"><span>Water bonus</span><strong id="bonus-score">0</strong></div>
+            <div class="game-controls">
+                <button id="help-button" class="secondary-button" type="button">How to play</button>
+                <button id="pause-button" type="button" disabled>Pause</button>
+                <button id="reset-button" class="secondary-button" type="button">Reset</button>
+            </div>
+        </section>
+
+        <section class="game-area">
+            <div id="game-board" class="game-board" aria-label="Brick breaker game area" tabindex="0">
+                <div id="confetti" class="confetti" aria-hidden="true"></div>
+                <div id="message" class="game-message">
+                    <h2>Ready to make a splash?</h2>
+                    <p>Move with the arrow keys or A and D.</p>
+                    <button id="start-button" type="button">Start game</button>
+                </div>
+                <div id="paddle" class="paddle"></div>
+                <div id="ball" class="ball" aria-hidden="true"></div>
+            </div>
+        </section>
+
+        <p class="cause-note"><span aria-hidden="true">💧</span> Every point helps tell the story of access to clean water.</p>
+    </main>
+
+    <dialog id="help-dialog" class="help-dialog">
+        <div class="dialog-heading">
+            <h2>How to play</h2>
+            <button id="close-help-button" class="close-button" type="button" aria-label="Close how to play">&times;</button>
+        </div>
+        <ul class="rules-list">
+            <li>Move the yellow paddle with your pointer, arrow keys, or A and D.</li>
+            <li>Keep the ball in play and break every brick to win.</li>
+            <li>You start with 3 balls. Missing the paddle costs one ball.</li>
+            <li>Each brick is worth 10 points.</li>
+        </ul>
+        <div class="object-guide">
+            <div class="object-row"><span class="object-icon water-can-icon"><img src="img/water-can.png" alt=""></span><span><strong>Helpful bonus</strong><br>Collect a water can or blue water drop for bonus points.</span></div>
+            <div class="object-row"><span class="object-icon dirty-water-icon" aria-hidden="true"></span><span><strong>Dirty water</strong><br>Catch the brown droplet and all collected bonus points are wiped out.</span></div>
+        </div>
+    </dialog>
+    <script src="script.js"></script>
+</body>
+</html>
