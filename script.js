@@ -12,10 +12,14 @@ const helpButton = document.querySelector('#help-button');
 const helpDialog = document.querySelector('#help-dialog');
 const closeHelpButton = document.querySelector('#close-help-button');
 const confetti = document.querySelector('#confetti');
+const milestoneCelebration = document.querySelector('#milestone-celebration');
+const difficultyOptionsContainer = document.querySelector('#difficulty-options');
+const difficultyOptions = document.querySelectorAll('input[name="difficulty"]');
 
 let score = 0;
 let bonusScore = 0;
 let lives = 3;
+let selectedDifficulty = '';
 let paddleX = 0;
 let ballX = 0;
 let ballY = 0;
@@ -26,9 +30,10 @@ let gameRunning = false;
 let gamePaused = false;
 let animationId;
 let keysPressed = {};
+let celebratedMilestones = [];
 
 function createBricks() {
-	const brickCount = 28;
+	const brickCount = 42;
 	const brickHeight = 22;
 	const gap = 8;
 	const columns = board.clientWidth < 620 ? 5 : 7;
@@ -102,6 +107,29 @@ function showConfetti() {
 	}
 }
 
+function showCelebration(text, isWarning = false) {
+	milestoneCelebration.textContent = text;
+	milestoneCelebration.classList.toggle('warning', isWarning);
+	milestoneCelebration.classList.remove('show');
+	void milestoneCelebration.offsetWidth;
+	milestoneCelebration.classList.add('show');
+}
+
+function checkMilestones() {
+	const milestones = [150, 300];
+	for (let milestone = 400; milestone <= score; milestone += 100) {
+		milestones.push(milestone);
+	}
+	const milestone = milestones.find((value) => score >= value && !celebratedMilestones.includes(value));
+
+	if (!milestone) return;
+
+	celebratedMilestones.push(milestone);
+	const celebrationMessages = ['wow!', 'keep going!', 'Good job!'];
+	const randomMessage = celebrationMessages[Math.floor(Math.random() * celebrationMessages.length)];
+	showCelebration(`${milestone} points! ${randomMessage}`);
+}
+
 function updateBonuses() {
 	const paddleBox = paddle.getBoundingClientRect();
 	bonusObjects = bonusObjects.filter((bonus) => {
@@ -113,6 +141,8 @@ function updateBonuses() {
 			if (bonus.isDirty) {
 				score = Math.max(0, score - bonusScore * 25);
 				bonusScore = 0;
+				celebratedMilestones = celebratedMilestones.filter((milestone) => score >= milestone);
+				showCelebration('Oh no!', true);
 			} else {
 				bonusScore += 1;
 				score += 25;
@@ -146,6 +176,7 @@ function endGame(title, copy) {
 	pauseButton.textContent = 'Pause';
 	message.querySelector('h2').textContent = title;
 	message.querySelector('p').textContent = copy;
+	difficultyOptionsContainer.hidden = true;
 	startButton.textContent = 'Play again';
 	startButton.hidden = false;
 	message.classList.remove('hidden');
@@ -190,6 +221,7 @@ function moveBall() {
 
 	if (ballY > boardHeight) loseLife();
 	updateBonuses();
+	checkMilestones();
 	drawGame();
 
 	if (lives > 0 && document.querySelectorAll('.brick').length === 0) {
@@ -201,15 +233,20 @@ function moveBall() {
 }
 
 function startGame() {
+	if (!selectedDifficulty) return;
+
 	document.querySelectorAll('.brick, .bonus').forEach((item) => item.remove());
 	clearConfetti();
 	score = 0;
 	bonusScore = 0;
-	lives = 3;
+	celebratedMilestones = [];
+	const startingBalls = { easy: 5, normal: 3, hard: 1 };
+	lives = startingBalls[selectedDifficulty];
 	bonusObjects = [];
 	createBricks();
 	resetBall();
 	message.classList.add('hidden');
+	difficultyOptionsContainer.hidden = true;
 	startButton.hidden = false;
 	gameRunning = true;
 	gamePaused = false;
@@ -230,6 +267,7 @@ function togglePause() {
 		keysPressed = {};
 		message.querySelector('h2').textContent = 'Game paused';
 		message.querySelector('p').textContent = 'Press Play when you are ready to continue.';
+		difficultyOptionsContainer.hidden = true;
 		startButton.hidden = true;
 		message.classList.remove('hidden');
 	} else {
@@ -244,7 +282,8 @@ function resetGame() {
 	clearConfetti();
 	score = 0;
 	bonusScore = 0;
-	lives = 3;
+	celebratedMilestones = [];
+	lives = selectedDifficulty ? { easy: 5, normal: 3, hard: 1 }[selectedDifficulty] : 3;
 	bonusObjects = [];
 	gameRunning = false;
 	gamePaused = false;
@@ -252,10 +291,12 @@ function resetGame() {
 	resetBall();
 	pauseButton.disabled = true;
 	pauseButton.textContent = 'Pause';
-	message.querySelector('h2').textContent = 'Ready to make a splash?';
+	message.querySelector('h2').textContent = 'Choose a difficulty';
 	message.querySelector('p').textContent = 'Move with the arrow keys or A and D.';
+	difficultyOptionsContainer.hidden = false;
 	startButton.textContent = 'Start game';
 	startButton.hidden = false;
+	startButton.disabled = !selectedDifficulty;
 	message.classList.remove('hidden');
 }
 
@@ -282,6 +323,12 @@ board.addEventListener('pointermove', (event) => {
 	drawGame();
 });
 
+difficultyOptions.forEach((option) => {
+	option.addEventListener('change', () => {
+		selectedDifficulty = option.value;
+		startButton.disabled = false;
+	});
+});
 startButton.addEventListener('click', startGame);
 pauseButton.addEventListener('click', togglePause);
 resetButton.addEventListener('click', resetGame);

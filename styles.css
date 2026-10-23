@@ -128,8 +128,8 @@ h1 {
 .game-board {
 	position: relative;
 	overflow: hidden;
-	height: min(62vw, 560px);
-	min-height: 390px;
+	height: min(72vw, 680px);
+	min-height: 460px;
 	background-color: #fffbed;
 	background-image: linear-gradient(rgba(255, 253, 245, 0.62), rgba(255, 253, 245, 0.62)), url('img/cw_logo.png');
 	background-position: center, center;
@@ -181,6 +181,42 @@ h1 {
 	animation: confetti-fall var(--confetti-duration) var(--confetti-delay) ease-out forwards;
 }
 
+.milestone-celebration {
+	position: absolute;
+	top: 24%;
+	left: 50%;
+	z-index: 2;
+	padding: 14px 24px;
+	border: 3px solid var(--deep-blue);
+	border-radius: 999px;
+	color: var(--deep-blue);
+	background: var(--yellow);
+	box-shadow: 0 8px 18px rgba(7, 59, 92, 0.2);
+	font-family: 'Space Grotesk', sans-serif;
+	font-size: clamp(1rem, 3vw, 1.45rem);
+	font-weight: 700;
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(-50%, -20px) scale(0.7);
+}
+
+.milestone-celebration.show {
+	animation: milestone-pop 1.4s ease-out forwards;
+}
+
+.milestone-celebration.warning {
+	border-color: #7a3028;
+	color: #fff;
+	background: #f16061;
+}
+
+@keyframes milestone-pop {
+	0% { opacity: 0; transform: translate(-50%, -20px) scale(0.7); }
+	18% { opacity: 1; transform: translate(-50%, 0) scale(1.08); }
+	35% { transform: translate(-50%, 0) scale(1); }
+	100% { opacity: 0; transform: translate(-50%, -42px) scale(1); }
+}
+
 @keyframes confetti-fall {
 	0% {
 		opacity: 1;
@@ -195,6 +231,9 @@ h1 {
 
 @media (prefers-reduced-motion: reduce) {
 	.confetti-piece {
+		animation-duration: 1ms;
+	}
+	.milestone-celebration.show {
 		animation-duration: 1ms;
 	}
 }
@@ -282,6 +321,28 @@ h1 {
 .game-message.hidden { display: none; }
 .game-message h2 { margin: 0 0 8px; color: var(--deep-blue); font-size: 1.45rem; }
 .game-message p { margin: 0 0 20px; color: #527084; }
+.difficulty-options {
+	display: grid;
+	gap: 8px;
+	margin: 0 0 20px;
+	padding: 0;
+	border: 0;
+	text-align: left;
+}
+.difficulty-options[hidden] { display: none; }
+.difficulty-options legend { margin-bottom: 8px; color: var(--deep-blue); font-weight: 700; }
+.difficulty-options label {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 9px 10px;
+	border: 1px solid var(--line);
+	border-radius: 3px;
+	background: #f7fcfd;
+	cursor: pointer;
+}
+.difficulty-options label span { margin-left: auto; color: #527084; font-size: 0.85rem; }
+.difficulty-options input { accent-color: var(--deep-blue); }
 
 button {
 	border: 0;
@@ -325,6 +386,24 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .dirty-water-icon { border: 3px solid #4e372f; border-radius: 50% 50% 50% 0; background: #765548; transform: rotate(-45deg); }
 .object-row strong { color: var(--deep-blue); }
 .cause-note { margin: 16px 0 0; color: #527084; font-size: 0.9rem; text-align: center; }
+.game-footer {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 16px;
+	margin-top: 18px;
+	padding-top: 16px;
+	border-top: 1px solid rgba(7, 59, 92, 0.12);
+	color: #527084;
+	font-size: 0.85rem;
+	line-height: 1.4;
+	text-align: center;
+}
+.game-footer span,
+.game-footer a { max-width: 100%; }
+.game-footer a { color: var(--deep-blue); font-weight: 700; overflow-wrap: anywhere; }
+.game-footer a:hover { color: #1681b9; }
 
 @media (max-width: 620px) {
 	.game-shell { padding-top: 22px; }
@@ -336,5 +415,6 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 	.stat span { display: block; font-size: 0.65rem; }
 	.stat strong { font-size: 1.25rem; }
 	.game-controls { flex-direction: column; }
-	.game-board { min-height: 390px; }
+	.game-board { min-height: 460px; }
+	.game-footer { align-items: center; flex-direction: column; gap: 8px; }
 }

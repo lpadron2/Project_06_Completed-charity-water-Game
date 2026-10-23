@@ -33,10 +33,17 @@
         <section class="game-area">
             <div id="game-board" class="game-board" aria-label="Brick breaker game area" tabindex="0">
                 <div id="confetti" class="confetti" aria-hidden="true"></div>
+                <div id="milestone-celebration" class="milestone-celebration" aria-live="polite" aria-atomic="true"></div>
                 <div id="message" class="game-message">
-                    <h2>Ready to make a splash?</h2>
+                    <h2>Choose a difficulty</h2>
                     <p>Move with the arrow keys or A and D.</p>
-                    <button id="start-button" type="button">Start game</button>
+                    <fieldset id="difficulty-options" class="difficulty-options">
+                        <legend>Difficulty</legend>
+                        <label><input type="radio" name="difficulty" value="easy"> Easy <span>5 balls</span></label>
+                        <label><input type="radio" name="difficulty" value="normal"> Normal <span>3 balls</span></label>
+                        <label><input type="radio" name="difficulty" value="hard"> Hard <span>1 ball</span></label>
+                    </fieldset>
+                    <button id="start-button" type="button" disabled>Start game</button>
                 </div>
                 <div id="paddle" class="paddle"></div>
                 <div id="ball" class="ball" aria-hidden="true"></div>
@@ -44,6 +51,12 @@
         </section>
 
         <p class="cause-note"><span aria-hidden="true">💧</span> Every point helps tell the story of access to clean water.</p>
+
+        <footer class="game-footer">
+            <span>Learn more about the mission:</span>
+            <a href="https://www.charitywater.org/about" target="_blank" rel="noopener noreferrer">About charity: water</a>
+            <a href="https://www.charitywater.org/donate" target="_blank" rel="noopener noreferrer">Donate</a>
+        </footer>
     </main>
 
     <dialog id="help-dialog" class="help-dialog">
@@ -54,7 +67,7 @@
         <ul class="rules-list">
             <li>Move the yellow paddle with your pointer, arrow keys, or A and D.</li>
             <li>Keep the ball in play and break every brick to win.</li>
-            <li>You start with 3 balls. Missing the paddle costs one ball.</li>
+            <li>You start with X balls (depending on difficulty). Missing the paddle costs one ball.</li>
             <li>Each brick is worth 10 points.</li>
         </ul>
         <div class="object-guide">
